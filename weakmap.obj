@@ -1,0 +1,144 @@
+24.3.1 The WeakMap Constructor
+
+The WeakMap constructor:
+
+    is %WeakMap%.
+    is the initial value of the "WeakMap" property of the global object.
+    creates and initializes a new WeakMap when called as a constructor.
+    is not intended to be called as a function and will throw an exception when called in that manner.
+    may be used as the value in an extends clause of a class definition. Subclass constructors that intend to inherit the specified WeakMap behaviour must include a super call to the WeakMap constructor to create and initialize the subclass instance with the internal state necessary to support the WeakMap.prototype built-in methods.
+
+24.3.1.1 WeakMap ( [ iterable ] )
+
+This function performs the following steps when called:
+
+    1. If NewTarget is undefined, throw a TypeError exception.
+    2. Let map be ? OrdinaryCreateFromConstructor(NewTarget, "%WeakMap.prototype%", « [[WeakMapData]] »).
+    3. Set map.[[WeakMapData]] to a new empty List.
+    4. If iterable is either undefined or null, return map.
+    5. Let adder be ? Get(map, "set").
+    6. If IsCallable(adder) is false, throw a TypeError exception.
+    7. Return ? AddEntriesFromIterable(map, iterable, adder).
+
+Note
+
+If the parameter iterable is present, it is expected to be an object that implements a %Symbol.iterator% method that returns an iterator object that produces a two element array-like object whose first element is a value that will be used as a WeakMap key and whose second element is the value to associate with that key.
+24.3.2 Properties of the WeakMap Constructor
+
+The WeakMap constructor:
+
+    has a [[Prototype]] internal slot whose value is %Function.prototype%.
+    has the following properties:
+
+24.3.2.1 WeakMap.prototype
+
+The initial value of WeakMap.prototype is the WeakMap prototype object.
+
+This property has the attributes { [[Writable]]: false, [[Enumerable]]: false, [[Configurable]]: false }.
+24.3.3 Properties of the WeakMap Prototype Object
+
+The WeakMap prototype object:
+
+    is %WeakMap.prototype%.
+    has a [[Prototype]] internal slot whose value is %Object.prototype%.
+    is an ordinary object.
+    does not have a [[WeakMapData]] internal slot.
+
+24.3.3.1 WeakMap.prototype.constructor
+
+The initial value of WeakMap.prototype.constructor is %WeakMap%.
+24.3.3.2 WeakMap.prototype.delete ( key )
+
+This method performs the following steps when called:
+
+    1. Let M be the this value.
+    2. Perform ? RequireInternalSlot(M, [[WeakMapData]]).
+    3. If CanBeHeldWeakly(key) is false, return false.
+    4. For each Record { [[Key]], [[Value]] } p of M.[[WeakMapData]], do
+           a. If p.[[Key]] is not empty and SameValue(p.[[Key]], key) is true, then
+                  i. Set p.[[Key]] to empty.
+                  ii. Set p.[[Value]] to empty.
+                  iii. Return true.
+    5. Return false.
+
+Note
+
+The value empty is used as a specification device to indicate that an entry has been deleted. Actual implementations may take other actions such as physically removing the entry from internal data structures.
+24.3.3.3 WeakMap.prototype.get ( key )
+
+This method performs the following steps when called:
+
+    1. Let M be the this value.
+    2. Perform ? RequireInternalSlot(M, [[WeakMapData]]).
+    3. If CanBeHeldWeakly(key) is false, return undefined.
+    4. For each Record { [[Key]], [[Value]] } p of M.[[WeakMapData]], do
+           a. If p.[[Key]] is not empty and SameValue(p.[[Key]], key) is true, return p.[[Value]].
+    5. Return undefined.
+
+24.3.3.4 WeakMap.prototype.getOrInsert ( key, value )
+
+This method performs the following steps when called:
+
+    1. Let M be the this value.
+    2. Perform ? RequireInternalSlot(M, [[WeakMapData]]).
+    3. If CanBeHeldWeakly(key) is false, throw a TypeError exception.
+    4. For each Record { [[Key]], [[Value]] } p of M.[[WeakMapData]], do
+           a. If p.[[Key]] is not empty and SameValue(p.[[Key]], key) is true, return p.[[Value]].
+    5. Let p be the Record { [[Key]]: key, [[Value]]: value }.
+    6. Append p to M.[[WeakMapData]].
+    7. Return value.
+
+24.3.3.5 WeakMap.prototype.getOrInsertComputed ( key, callback )
+
+This method performs the following steps when called:
+
+    1. Let M be the this value.
+    2. Perform ? RequireInternalSlot(M, [[WeakMapData]]).
+    3. If CanBeHeldWeakly(key) is false, throw a TypeError exception.
+    4. If IsCallable(callback) is false, throw a TypeError exception.
+    5. For each Record { [[Key]], [[Value]] } p of M.[[WeakMapData]], do
+           a. If p.[[Key]] is not empty and SameValue(p.[[Key]], key) is true, return p.[[Value]].
+    6. Let value be ? Call(callback, undefined, « key »).
+    7. NOTE: The WeakMap may have been modified during execution of callback.
+    8. For each Record { [[Key]], [[Value]] } p of M.[[WeakMapData]], do
+           a. If p.[[Key]] is not empty and SameValue(p.[[Key]], key) is true, then
+                  i. Set p.[[Value]] to value.
+                  ii. Return value.
+    9. Let p be the Record { [[Key]]: key, [[Value]]: value }.
+    10. Append p to M.[[WeakMapData]].
+    11. Return value.
+
+24.3.3.6 WeakMap.prototype.has ( key )
+
+This method performs the following steps when called:
+
+    1. Let M be the this value.
+    2. Perform ? RequireInternalSlot(M, [[WeakMapData]]).
+    3. If CanBeHeldWeakly(key) is false, return false.
+    4. For each Record { [[Key]], [[Value]] } p of M.[[WeakMapData]], do
+           a. If p.[[Key]] is not empty and SameValue(p.[[Key]], key) is true, return true.
+    5. Return false.
+
+24.3.3.7 WeakMap.prototype.set ( key, value )
+
+This method performs the following steps when called:
+
+    1. Let M be the this value.
+    2. Perform ? RequireInternalSlot(M, [[WeakMapData]]).
+    3. If CanBeHeldWeakly(key) is false, throw a TypeError exception.
+    4. For each Record { [[Key]], [[Value]] } p of M.[[WeakMapData]], do
+           a. If p.[[Key]] is not empty and SameValue(p.[[Key]], key) is true, then
+                  i. Set p.[[Value]] to value.
+                  ii. Return M.
+    5. Let p be the Record { [[Key]]: key, [[Value]]: value }.
+    6. Append p to M.[[WeakMapData]].
+    7. Return M.
+
+24.3.3.8 WeakMap.prototype [ %Symbol.toStringTag% ]
+
+The initial value of the %Symbol.toStringTag% property is the String value "WeakMap".
+
+This property has the attributes { [[Writable]]: false, [[Enumerable]]: false, [[Configurable]]: true }.
+24.3.4 Properties of WeakMap Instances
+
+WeakMap instances are ordinary objects that inherit properties from the WeakMap prototype object. WeakMap instances also have a [[WeakMapData]] internal slot.
